@@ -38,6 +38,7 @@ std::vector<Coords> detectfaces(const std::string &filename, cv::CascadeClassifi
 		faceCorrdinates.y2 = 0 + 0;
 		faceCorrdinates.frame = frame;
 		faceCorrdinatesArray.push_back(faceCorrdinates);
+		std::cout << "Found faces: " << 0 << std::endl;
 	}
 	else
 	{
@@ -51,8 +52,8 @@ std::vector<Coords> detectfaces(const std::string &filename, cv::CascadeClassifi
 			faceCorrdinates.frame = frame;
 			faceCorrdinatesArray.push_back(faceCorrdinates);
 		}
+		std::cout << "Found faces: " << faceCorrdinatesArray.size() << std::endl;
 	}
-	std::cout << "Found faces: " << faceCorrdinatesArray.size() << std::endl;
 	std::cout << "At path:" << filename << std::endl << std::endl;
 	return faceCorrdinatesArray;
 }
