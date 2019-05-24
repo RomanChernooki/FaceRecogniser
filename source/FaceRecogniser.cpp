@@ -31,7 +31,7 @@ void FaceRecogniser::readDirectory(const std::string& name)
 	}
 	readDirectoryPath(path);
 	std::ofstream jsonFile;
-	jsonFile.open(rootPath->string() + "\\output.json");
+	jsonFile.open(rootPath->string() + "\\result.json");
 	boost::property_tree::write_json(jsonFile, root);
 	jsonFile.close();
 }
@@ -71,7 +71,7 @@ void FaceRecogniser::scanImage(const boost::filesystem::path &path)
 {
 	std::vector<Coords> coords = detectfaces(path.string(), this->face_cascade);
 	boost::property_tree::ptree imageNode;
-	imageNode.put("Result", (path.stem().string() + "jpg"));
+	imageNode.put("Result", (this->outputDirectory + path.stem().string() + ".jpg"));
 	cv::resize(*coords[0].frame, *coords[0].frame, cv::Size(), 0.5, 0.5);
 	if (coords.size())
 	{
