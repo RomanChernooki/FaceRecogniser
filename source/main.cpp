@@ -4,10 +4,14 @@
 #include "FaceRecogniser.h"
 #include <iostream>
 
-int main()
+int main(int argc, char *argv[])
 {
+	if (argc == 1)
+	{
+		std::cout << "Give path to a folder as an first argument, please." << std::endl;
+		return -1;
+	}
 	FaceRecogniser recogniser;
-	recogniser.readDirectory(R"(E:\projects\face_detector\data)");
-    std::cout << "Hello World!\n"; 
+	recogniser.readDirectory(argv[1]);
 }
 
