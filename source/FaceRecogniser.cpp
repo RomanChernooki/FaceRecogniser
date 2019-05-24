@@ -73,7 +73,7 @@ void FaceRecogniser::scanImage(const boost::filesystem::path &path)
 	boost::property_tree::ptree imageNode;
 	imageNode.put("Result", (this->outputDirectory + path.stem().string() + ".jpg"));
 	cv::resize(*coords[0].frame, *coords[0].frame, cv::Size(), 0.5, 0.5);
-	if (coords.size())
+	if (coords.size() && (coords[0].x2 - coords[0].x1))
 	{
 		for (int i = 0; i < coords.size(); i++)
 		{
