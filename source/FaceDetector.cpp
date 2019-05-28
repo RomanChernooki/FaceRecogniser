@@ -34,8 +34,8 @@ std::vector<Coords> detectfaces(const std::string &filename, cv::CascadeClassifi
 		Coords faceCorrdinates;
 		faceCorrdinates.x1 = 0;
 		faceCorrdinates.y1 = 0;
-		faceCorrdinates.x2 = 0 + 0;
-		faceCorrdinates.y2 = 0 + 0;
+		faceCorrdinates.x2 = 0;
+		faceCorrdinates.y2 = 0;
 		faceCorrdinates.frame = frame;
 		faceCorrdinatesArray.push_back(faceCorrdinates);
 		std::cout << "Found faces: " << 0 << std::endl;

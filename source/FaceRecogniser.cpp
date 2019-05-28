@@ -10,6 +10,18 @@
 
 using namespace cv;
 
+
+FaceRecogniser::FaceRecogniser()
+{
+	this->rootPath = 0;
+}
+
+
+FaceRecogniser::~FaceRecogniser()
+{
+}
+
+
 void FaceRecogniser::readDirectory(const std::string& name)
 {
 	boost::filesystem::path path(name);
@@ -56,16 +68,6 @@ void FaceRecogniser::readDirectoryPath(const boost::filesystem::path &path)
 	}
 }
 
-
-FaceRecogniser::FaceRecogniser()
-{
-	this->rootPath = 0;
-}
-
-
-FaceRecogniser::~FaceRecogniser()
-{
-}
 
 void FaceRecogniser::scanImage(const boost::filesystem::path &path)
 {
