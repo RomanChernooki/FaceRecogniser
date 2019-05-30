@@ -5,8 +5,6 @@
 #include <opencv2/objdetect.hpp>
 #include <vector>
 
-#define MAX_THREAD_COUNT 7
-
 class FaceRecogniser
 {
 public:
@@ -16,7 +14,6 @@ public:
 
 private:
 	cv::CascadeClassifier face_cascade;
-	boost::filesystem::path *rootPath;
 	boost::property_tree::ptree root;
 #ifdef _WIN32
 	const std::string outputDirectory = R"(C:\output\)"; 

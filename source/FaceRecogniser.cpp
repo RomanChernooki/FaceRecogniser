@@ -11,14 +11,10 @@
 #include <regex>
 #include <vector>
 
-#include <windows.h> 
-
 using namespace cv;
-typedef int(__cdecl* MYPROC)(LPWSTR);
 
 FaceRecogniser::FaceRecogniser()
 {
-	this->rootPath = 0;
 }
 
 
@@ -29,26 +25,25 @@ FaceRecogniser::~FaceRecogniser()
 
 void FaceRecogniser::readDirectory(const std::string& name)
 {
-	boost::filesystem::path path(name);
-	if (!exists(path))
+	boost::filesystem::path rootPath(name);
+	if (!exists(rootPath))
 	{ 
 		std::cout << name << " is unexisting path.";
 		return;
 	};
-	if (!boost::filesystem::is_directory(path))
+	if (!boost::filesystem::is_directory(rootPath))
 	{
 		std::cout << name << " isn't directory.";
 		return;
 	}
-	this->rootPath = &path;
 	boost::filesystem::path outputPathDirectory = boost::filesystem::path(outputDirectory);
 	if (!exists(outputPathDirectory))
 	{
 		create_directory(outputPathDirectory);
 	}
-	readDirectoryPath(path);
+	readDirectoryPath(rootPath);
 	std::ofstream jsonFile;
-	jsonFile.open(rootPath->string() + "\\result.json");
+	jsonFile.open(rootPath.string() + "\\result.json");
 	boost::property_tree::write_json(jsonFile, root);
 	jsonFile.close();
 }
