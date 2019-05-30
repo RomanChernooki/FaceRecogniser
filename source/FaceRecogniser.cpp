@@ -1,6 +1,9 @@
 #include "FaceRecogniser.h"
-#include "FaceDetector.h"
+#include "../library_source/FaceDetector.h"
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/dll/import.hpp> 
+#include <boost/dll/shared_library.hpp>
+#include <boost/function.hpp>
 #include <opencv2/objdetect.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
@@ -8,8 +11,10 @@
 #include <regex>
 #include <vector>
 
-using namespace cv;
+#include <windows.h> 
 
+using namespace cv;
+typedef int(__cdecl* MYPROC)(LPWSTR);
 
 FaceRecogniser::FaceRecogniser()
 {
@@ -71,27 +76,44 @@ void FaceRecogniser::readDirectoryPath(const boost::filesystem::path &path)
 
 void FaceRecogniser::scanImage(const boost::filesystem::path &path)
 {
-	std::vector<Coords> coords = detectfaces(path.string(), this->face_cascade);
+	boost::dll::shared_library lib(R"(face_detector_lib)", boost::dll::load_mode::append_decorations);
+	if (!lib.is_loaded())
+	{
+		std::cout << "Cant't find face_detector_lib!" << std::endl;
+		return;
+	}
+	boost::function<ImageCoords(const std::string&, cv::CascadeClassifier&)> detectFacesFunc = 
+		lib.get<ImageCoords(const std::string&, cv::CascadeClassifier&)>("detectFaces"); 
+	if (!detectFacesFunc)
+	{
+		std::cout << "Cant't find detectFacesFunc" << std::endl;
+		return;
+	}
+	ImageCoords image = detectFacesFunc(path.string(), this->face_cascade);
 	boost::property_tree::ptree imageNode;
 	imageNode.put("Result", (this->outputDirectory + path.stem().string() + ".jpg"));
-	cv::resize(*coords[0].frame, *coords[0].frame, cv::Size(), 0.5, 0.5);
-	if (coords.size() && (coords[0].x2 - coords[0].x1))
+	cv::resize(image.imageFrame, image.imageFrame, cv::Size(), 0.5, 0.5);
+	if (image.faceCorrdsVector.size())
 	{
-		for (int i = 0; i < coords.size(); i++)
+		for (int i = 0; i < image.faceCorrdsVector.size(); i++)
 		{
 			boost::property_tree::ptree coordsNode;
-			coordsNode.put("x1", coords[i].x1);
-			coordsNode.put("x2", coords[i].x2);
-			coordsNode.put("y1", coords[i].y1);
-			coordsNode.put("y2", coords[i].y2);
+			coordsNode.put("x1", image.faceCorrdsVector[i].x1);
+			coordsNode.put("x2", image.faceCorrdsVector[i].x2);
+			coordsNode.put("y1", image.faceCorrdsVector[i].y1);
+			coordsNode.put("y2", image.faceCorrdsVector[i].y2);
 			imageNode.push_back(std::make_pair("FaceCoords", coordsNode));
-			cv::Rect region(coords[i].x1 / 2, coords[i].y1 / 2, (coords[i].x2 - coords[i].x1) / 2, (coords[i].y2 - coords[i].y1) / 2);
-			cv::GaussianBlur((*(coords[0].frame))(region), (*(coords[0].frame))(region), Size(0, 0), 4);
+			cv::Rect region(
+				image.faceCorrdsVector[i].x1 / 2,
+				image.faceCorrdsVector[i].y1 / 2,
+				(image.faceCorrdsVector[i].x2 - image.faceCorrdsVector[i].x1) / 2,
+				(image.faceCorrdsVector[i].y2 - image.faceCorrdsVector[i].y1) / 2);
+			cv::GaussianBlur(image.imageFrame(region), image.imageFrame(region), Size(0, 0), 4);
 		}
 	}
 
-	imwrite(outputDirectory + path.stem().string() + ".jpg", *coords[0].frame);
-	delete coords[0].frame;
+	imwrite(outputDirectory + path.stem().string() + ".jpg", image.imageFrame);
 	root.push_back(std::make_pair("Image", imageNode));
-	std::cout << coords.size() << std::endl;
+	std::cout << image.faceCorrdsVector.size() << std::endl;
+
 }

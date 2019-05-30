@@ -18,7 +18,7 @@ INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 link_directories(boostbin)
 
 # Declare the executable target built from your sources
-add_library(face_detector_lib SHARED source/FaceDetector.cpp)
+add_library(face_detector_lib SHARED library_source/FaceDetector.cpp library_source/FaceDetector.h)
 target_link_libraries(face_detector_lib ${OpenCV_LIBS})
 
 ADD_SUBDIRECTORY (googletest)
@@ -28,12 +28,11 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 # Add test cpp file
 add_executable( runUnitTests tests/test.cpp )
 # Link test executable against gtest & gtest_main
-target_link_libraries(runUnitTests gtest gtest_main ${OpenCV_LIBS} face_detector_lib)
+target_link_libraries(runUnitTests gtest gtest_main ${OpenCV_LIBS})
 add_test( runUnitTests runUnitTests )
 
 
-add_executable(face_detector source/main.cpp source/FaceRecogniser.cpp)
-target_link_libraries(face_detector face_detector_lib)
+add_executable(face_detector source/main.cpp source/FaceRecogniser.cpp source/FaceRecogniser.h)
 
 # Link your application with OpenCV libraries
 target_link_libraries(face_detector ${OpenCV_LIBS})
