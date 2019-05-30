@@ -51,8 +51,6 @@ void FaceRecogniser::readDirectory(const std::string& name)
 
 void FaceRecogniser::readDirectoryPath(const boost::filesystem::path &path)
 {
-	boost::filesystem::directory_iterator start(path);
-	boost::filesystem::directory_iterator end;
 	for (auto& pathIterator : boost::filesystem::directory_iterator(path))
 	{
 		std::cout << pathIterator.path() << '\n';
